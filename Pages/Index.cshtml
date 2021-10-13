@@ -76,11 +76,6 @@
                             src="https://www.google.com/maps/embed/v1/place?key=AIzaSyABjlTQ4n7GEdS3gErCOgGiirYFAelOMeA&q=@coordinatesModel.latitude,@coordinatesModel.longitude">
                         </iframe>
                     }
-                    <h5>Category:</h5>
-                    foreach (var category in imageAnalysisView.imageAnalysisResult.Categories)
-                    {
-                        <span class="text-success"> @category.Name with confidence: @category.Score</span><br />
-                    }
                     <h5>Tags</h5>
                     foreach (var tag in imageAnalysisView.imageAnalysisResult.Tags)
                     {

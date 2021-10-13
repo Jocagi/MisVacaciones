@@ -53,12 +53,22 @@ namespace MisVacaciones.Pages
                 // using service to analyze the image  
                 var imageAnalysis = await _computerVisionService.AnalyzeImageUrl(filePath);
                 if (imageAnalysis.imageAnalysisResult != null)
+                {
                     ViewData["ImageAnalysisViewModel"] = imageAnalysis;
-                // using service to get location 
-                var location = imageAnalysis.imageAnalysisResult.Categories[0].Detail.Landmarks[0].Name;
-                var coordinates = await _locationService.AnalyzeAddress(location);
-                if (coordinates != null)
-                    ViewData["Coordinates"] = coordinates;
+                    
+                    // using service to get location 
+                    if (imageAnalysis.imageAnalysisResult.Categories.Count >= 1 &&
+                        imageAnalysis.imageAnalysisResult.Categories[0].Detail.Landmarks.Count >= 1)
+                    {
+                        string? location = imageAnalysis.imageAnalysisResult.Categories[0].Detail.Landmarks[0].Name;
+                        if (location != null)
+                        {
+                            var coordinates = await _locationService.AnalyzeAddress(location);
+                            if (coordinates != null)
+                                ViewData["Coordinates"] = coordinates;
+                        }
+                    }
+                }
             }
 
             ViewData["SuccessMessage"] = fileUpload.FormFile.FileName.ToString() + " file uploaded!!";
