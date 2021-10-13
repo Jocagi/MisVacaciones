@@ -2,7 +2,6 @@
 
 @model IndexModel
 @using MisVacaciones.Services.Dto;
-@using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models
 @{
     ViewData["Title"] = "Home page";
 }
@@ -54,9 +53,28 @@
                         {
                             foreach (var landmark in category.Detail.Landmarks)
                             {
-                                <span class="text-success"> @landmark.Name with confidence: @landmark.Confidence</span><br/>
+                                <span class="text-success"> @landmark.Name with confidence: @landmark.Confidence</span><br />
+                                break;
                             }
+                            break;
                         }
+                    }
+                    @if (ViewData["Coordinates"] != null)
+                    {
+                        var coordinatesModel = (CoordinatesViewModel)ViewData["Coordinates"];
+                        <h5>Coordinates</h5>
+                        <span class="badge badge-warning">Latitud: @coordinatesModel.latitude </span>
+                        <span class="badge badge-warning">Longitud: @coordinatesModel.longitude </span>
+                        
+                        <h5>Location</h5>
+                        <iframe
+                            width="500"
+                            height="400"
+                            style="border:0"
+                            loading="lazy"
+                            allowfullscreen
+                            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyABjlTQ4n7GEdS3gErCOgGiirYFAelOMeA&q=@coordinatesModel.latitude,@coordinatesModel.longitude">
+                        </iframe>
                     }
                     <h5>Category:</h5>
                     foreach (var category in imageAnalysisView.imageAnalysisResult.Categories)
@@ -68,30 +86,6 @@
                     {
                         <span class="badge badge-success">@tag.Name - @tag.Confidence</span>
                     }
-                    <h5>Object Detection</h5>
-                    foreach (var obj in imageAnalysisView.imageAnalysisResult.Objects)
-                    {
-
-                        <span class="badge badge-warning">@obj.ObjectProperty with Confidence @obj.Confidence</span>
-                    }
-                    <h5>Face Detection</h5>
-                    foreach (var face in imageAnalysisView.imageAnalysisResult.Faces)
-                    {
-                        <span class="badge badge-info">
-                            A @face.Gender of age @face.Age at location @face.FaceRectangle.Left, @face.FaceRectangle.Top, @face.FaceRectangle.Width, @face.FaceRectangle.Top, @face.FaceRectangle.Height
-                        </span>
-                    }
-
-                    <h5>Image color scheme</h5>
-                    <span class="badge badge-secondary">Is black and white?:@imageAnalysisView.imageAnalysisResult.Color.IsBWImg</span>
-                    <span class="badge badge-secondary">Accent color:@imageAnalysisView.imageAnalysisResult.Color.AccentColor</span>
-                    <span class="badge badge-secondary">Dominant background color:@imageAnalysisView.imageAnalysisResult.Color.DominantColorBackground</span>
-                    <span class="badge badge-secondary">Dominant foreground color:@imageAnalysisView.imageAnalysisResult.Color.DominantColorForeground</span>
-
-                    <h5>Image Type</h5>
-                    <span class="badge badge-secondary">Clip Art Type: @imageAnalysisView.imageAnalysisResult.ImageType.ClipArtType</span>
-                    <span class="badge badge-secondary">Line Drawing Type: @imageAnalysisView.imageAnalysisResult.ImageType.LineDrawingType</span>
-
                 }
             </p>
         </div>

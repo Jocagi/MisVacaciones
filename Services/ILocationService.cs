@@ -6,8 +6,8 @@ using MisVacaciones.Services.Dto;
 
 namespace MisVacaciones.Services
 {
-    public interface IComputerVisionService
+    interface ILocationService
     {
-        Task<ImageAnalysisViewModel> AnalyzeImageUrl(string imageUrl);
+        public Task<CoordinatesViewModel> AnalyzeAddress(string location);
     }
 }

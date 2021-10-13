@@ -16,15 +16,17 @@ namespace MisVacaciones.Pages
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
-        private readonly ICompuerVisionService _computerVisionService;
+        private readonly IComputerVisionService _computerVisionService;
+        private readonly ILocationService _locationService;
         private readonly IWebHostEnvironment _hostEnvironment;
         public IndexModel(ILogger<IndexModel> logger, IWebHostEnvironment hostEnvironment)
         {
             _logger = logger;
-            _computerVisionService = new CompterVisionService();
+            _computerVisionService = new ComputerVisionService();
+            _locationService = new LocationService();
             this._hostEnvironment = hostEnvironment;
-
         }
+
         [BindProperty]
         public FileUpload fileUpload { get; set; }
         public void OnGet()
@@ -52,6 +54,11 @@ namespace MisVacaciones.Pages
                 var imageAnalysis = await _computerVisionService.AnalyzeImageUrl(filePath);
                 if (imageAnalysis.imageAnalysisResult != null)
                     ViewData["ImageAnalysisViewModel"] = imageAnalysis;
+                // using service to get location 
+                var location = imageAnalysis.imageAnalysisResult.Categories[0].Detail.Landmarks[0].Name;
+                var coordinates = await _locationService.AnalyzeAddress(location);
+                if (coordinates != null)
+                    ViewData["Coordinates"] = coordinates;
             }
 
             ViewData["SuccessMessage"] = fileUpload.FormFile.FileName.ToString() + " file uploaded!!";

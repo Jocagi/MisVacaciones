@@ -9,7 +9,7 @@ using MisVacaciones.Services.Dto;
 
 namespace MisVacaciones.Services
 {
-    public class CompterVisionService : ICompuerVisionService
+    public class ComputerVisionService : IComputerVisionService
     {
         // Add your Computer Vision subscription key and endpoint    
         private string subscriptionKey = "0ad494e269314a85a3b092c0cf561eb4";
