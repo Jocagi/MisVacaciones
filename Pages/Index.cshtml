@@ -54,16 +54,27 @@
                             foreach (var landmark in category.Detail.Landmarks)
                             {
                                 <span class="text-success"> @landmark.Name with confidence: @landmark.Confidence</span><br />
+                                break;
                             }
+                            break;
                         }
                     }
-                    <h5>Coordinates</h5>
                     @if (ViewData["Coordinates"] != null)
                     {
                         var coordinatesModel = (CoordinatesViewModel)ViewData["Coordinates"];
-
+                        <h5>Coordinates</h5>
                         <span class="badge badge-warning">Latitud: @coordinatesModel.latitude </span>
                         <span class="badge badge-warning">Longitud: @coordinatesModel.longitude </span>
+                        
+                        <h5>Location</h5>
+                        <iframe
+                            width="500"
+                            height="400"
+                            style="border:0"
+                            loading="lazy"
+                            allowfullscreen
+                            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyABjlTQ4n7GEdS3gErCOgGiirYFAelOMeA&q=@coordinatesModel.latitude,@coordinatesModel.longitude">
+                        </iframe>
                     }
                     <h5>Category:</h5>
                     foreach (var category in imageAnalysisView.imageAnalysisResult.Categories)
