@@ -18,12 +18,15 @@ namespace MisVacaciones.Pages
         private readonly ILogger<IndexModel> _logger;
         private readonly IComputerVisionService _computerVisionService;
         private readonly ILocationService _locationService;
+        private readonly IWeatherService _weatherService;
         private readonly IWebHostEnvironment _hostEnvironment;
+
         public IndexModel(ILogger<IndexModel> logger, IWebHostEnvironment hostEnvironment)
         {
             _logger = logger;
             _computerVisionService = new ComputerVisionService();
             _locationService = new LocationService();
+            _weatherService = new WeatherService();
             this._hostEnvironment = hostEnvironment;
         }
 
@@ -64,8 +67,18 @@ namespace MisVacaciones.Pages
                         if (location != null)
                         {
                             var coordinates = await _locationService.AnalyzeAddress(location);
-                            if (coordinates != null)
+                            if (coordinates != null) 
+                            {
                                 ViewData["Coordinates"] = coordinates;
+
+                                //using service to get weather
+                                var weather = await _weatherService.GetWeather(coordinates.longitude, coordinates.latitude);
+
+                                if (weather != null) 
+                                {
+                                    ViewData["Weather"] = weather;
+                                }
+                            }
                         }
                     }
                 }

@@ -2,6 +2,7 @@
 
 @model IndexModel
 @using MisVacaciones.Services.Dto;
+@using QuickType;
 @{
     ViewData["Title"] = "Home page";
 }
@@ -27,62 +28,79 @@
     }
 
     @*Displaying Analysis results*@
-    <div class="row">
-        <div class="col-sm-6">
+<div class="row">
+    <div class="col-sm-6">
 
-            @if (ViewData["ImageUrl"] != null)
+        @if (ViewData["ImageUrl"] != null)
+        {
+            var imageUrl = Convert.ToString(ViewData["ImageUrl"]);
+            <img src="UploadImages/@imageUrl" alt="rijsat.com" class="img-thumbnail" />
+        }
+    </div>
+    <div class="col-sm-6 small">
+        <p>
+            @if (ViewData["ImageAnalysisViewModel"] != null)
             {
-                var imageUrl = Convert.ToString(ViewData["ImageUrl"]);
-                <img src="UploadImages/@imageUrl" alt="rijsat.com" class="img-thumbnail" />
-            }
-        </div>
-        <div class="col-sm-6 small">
-            <p>
-                @if (ViewData["ImageAnalysisViewModel"] != null)
+                var imageAnalysisView = (ImageAnalysisViewModel)ViewData["ImageAnalysisViewModel"];
+                <h5>Description</h5>
+                foreach (var caption in imageAnalysisView.imageAnalysisResult.Description.Captions)
                 {
-                    var imageAnalysisView = (ImageAnalysisViewModel)ViewData["ImageAnalysisViewModel"];
-                    <h5>Description</h5>
-                    foreach (var caption in imageAnalysisView.imageAnalysisResult.Description.Captions)
+                    <span class="text-info"> @caption.Text: with confidence @caption.Confidence</span><br />
+                }
+                <h5>Landmark</h5>
+                foreach (var category in imageAnalysisView.imageAnalysisResult.Categories)
+                {
+                    if (category.Detail?.Landmarks != null)
                     {
-                        <span class="text-info"> @caption.Text: with confidence @caption.Confidence</span><br />
-                    }
-                    <h5>Landmarks:</h5>
-                    foreach (var category in imageAnalysisView.imageAnalysisResult.Categories)
-                    {
-                        if (category.Detail?.Landmarks != null)
+                        foreach (var landmark in category.Detail.Landmarks)
                         {
-                            foreach (var landmark in category.Detail.Landmarks)
-                            {
-                                <span class="text-success"> @landmark.Name with confidence: @landmark.Confidence</span><br />
-                                break;
-                            }
+                            <span class="text-success"> @landmark.Name with confidence: @landmark.Confidence</span><br />
                             break;
                         }
+                        break;
                     }
-                    @if (ViewData["Coordinates"] != null)
-                    {
-                        var coordinatesModel = (CoordinatesViewModel)ViewData["Coordinates"];
-                        <h5>Coordinates</h5>
-                        <span class="badge badge-warning">Latitud: @coordinatesModel.latitude </span>
-                        <span class="badge badge-warning">Longitud: @coordinatesModel.longitude </span>
-                        
-                        <h5>Location</h5>
-                        <iframe
-                            width="500"
+                }
+                @if (ViewData["Coordinates"] != null)
+                {
+                    var coordinatesModel = (CoordinatesViewModel)ViewData["Coordinates"];
+                    <h5>Coordinates</h5>
+                    <span class="badge badge-warning">Latitud: @coordinatesModel.latitude </span>
+                    <span class="badge badge-warning">Longitud: @coordinatesModel.longitude </span>
+
+                    <h5>Location</h5>
+                    <iframe width="500"
                             height="400"
                             style="border:0"
                             loading="lazy"
                             allowfullscreen
                             src="https://www.google.com/maps/embed/v1/place?key=AIzaSyABjlTQ4n7GEdS3gErCOgGiirYFAelOMeA&q=@coordinatesModel.latitude,@coordinatesModel.longitude">
-                        </iframe>
-                    }
-                    <h5>Tags</h5>
-                    foreach (var tag in imageAnalysisView.imageAnalysisResult.Tags)
-                    {
-                        <span class="badge badge-success">@tag.Name - @tag.Confidence</span>
-                    }
+                    </iframe>
                 }
-            </p>
-        </div>
+                <h5>Tags</h5>
+                @foreach (var tag in imageAnalysisView.imageAnalysisResult.Tags)
+                {
+                    <span class="badge badge-success">@tag.Name - @tag.Confidence</span>
+                }
+            }
+        </p>
     </div>
+    <div class="col-sm-6">
+        <h5>Weather</h5>
+        <ul class="list-group">
+            @if (ViewData["Weather"] != null)
+            {
+                var weatherModel = (Weather)ViewData["Weather"];
+                foreach (var item in weatherModel.List)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @item.Weather
+                        <div class="image-parent">
+                            <img src="https://s3.eu-central-1.amazonaws.com/bootstrapbaymisc/blog/24_days_bootstrap/don_quixote.jpg" class="img-fluid" alt="quixote">
+                        </div>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+</div>
 </form>  

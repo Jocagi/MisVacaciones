@@ -1,0 +1,18 @@
+Referencias
+
+Image Analysis In ASP.NET Core 5.0 Using Azure Cognitive Service
+
+https://www.c-sharpcorner.com/article/image-analysis-in-asp-net-core-5-0-using-azure-cognitive-service/
+https://docs.microsoft.com/en-us/azure/cognitive-services/computer-vision/quickstarts-sdk/image-analysis-client-library?tabs=visual-studio&pivots=programming-language-csharp
+https://azure.microsoft.com/es-es/blog/microsoft-cognitive-services-general-availability-for-face-api-computer-vision-api-and-content-moderator/
+
+Obtener coordenadas a partir de la dirección
+
+https://developers.google.com/maps/documentation/geocoding/overview
+
+Google Maps
+https://developers.google.com/maps/documentation/embed/get-started
+
+OpenWeather
+https://www.aspsnippets.com/Articles/Display-daily-Weather-Forecast-using-Weather-API-in-ASPNet.aspx
+https://www.c-sharpcorner.com/article/display-weather-forecast-in-asp-net-mvc-using-openweathermap-weather-api/

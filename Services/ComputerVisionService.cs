@@ -12,8 +12,8 @@ namespace MisVacaciones.Services
     public class ComputerVisionService : IComputerVisionService
     {
         // Add your Computer Vision subscription key and endpoint    
-        private string subscriptionKey = "0ad494e269314a85a3b092c0cf561eb4";
-        private string endpoint = "https://imageanalysisurl.cognitiveservices.azure.com/";
+        private const string subscriptionKey = "0ad494e269314a85a3b092c0cf561eb4";
+        private const string endpoint = "https://imageanalysisurl.cognitiveservices.azure.com/";
         /*  
          * AUTHENTICATE  
          * Creates a Computer Vision client used by each example.  
