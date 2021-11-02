@@ -93,12 +93,17 @@
                 @{var weatherModel = (Weather)ViewData["Weather"];}
                 @foreach (var item in weatherModel.List)
                 {
+                    var timestamp = item.Dt;
+                    string weatherlink = $"https://openweathermap.org/img/wn/{item.Weather[0].Icon}.png";
+                    // Unix timestamp is seconds past epoch
+                    DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                    dateTime = dateTime.AddSeconds(timestamp).ToLocalTime();
+
+
                     <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @dateTime.Date <br>
                         @item.Weather[0].Description
                         <div class="image-parent">
-                            @{
-                                string weatherlink = $"https://openweathermap.org/img/wn/{item.Weather[0].Icon}.png";
-                            }
                             <img src=" @weatherlink " class="img-fluid">
                         </div>
                     </li>
