@@ -9,7 +9,7 @@ namespace MisVacaciones.Services
 {
     public class LocationService : ILocationService
     { 
-        private string apiKey = "AIzaSyABjlTQ4n7GEdS3gErCOgGiirYFAelOMeA";
+        private const string apiKey = "AIzaSyABjlTQ4n7GEdS3gErCOgGiirYFAelOMeA";
         
         public async Task<CoordinatesViewModel> AnalyzeAddress(string location)
         {

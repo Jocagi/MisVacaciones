@@ -2,12 +2,14 @@
 
 @model IndexModel
 @using MisVacaciones.Services.Dto;
+@using QuickType;
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Index";
 }
 
 <div class="text-center">
-    <h4>Mis Próximas Vacaciones</h4>
+    <h2>My Next Vacations</h2>
+    <br>
 </div>
 <form enctype="multipart/form-data" method="post">
     @*File Upload part*@
@@ -27,67 +29,87 @@
     }
 
     @*Displaying Analysis results*@
-    <div class="row">
-        <div class="col-sm-6">
+<div class="row">
+    <div class="col-sm">
 
-            @if (ViewData["ImageUrl"] != null)
+        @if (ViewData["ImageUrl"] != null)
+        {
+            var imageUrl = Convert.ToString(ViewData["ImageUrl"]);
+            <img src="UploadImages/@imageUrl" class="img-thumbnail"/>
+        }
+    </div>
+    <div class="col-sm">
+        <p>
+            @if (ViewData["ImageAnalysisViewModel"] != null)
             {
-                var imageUrl = Convert.ToString(ViewData["ImageUrl"]);
-                <img src="UploadImages/@imageUrl" alt="rijsat.com" class="img-thumbnail" />
-            }
-        </div>
-        <div class="col-sm-6 small">
-            <p>
-                @if (ViewData["ImageAnalysisViewModel"] != null)
+                var imageAnalysisView = (ImageAnalysisViewModel)ViewData["ImageAnalysisViewModel"];
+                <h5>Description</h5>
+                foreach (var caption in imageAnalysisView.imageAnalysisResult.Description.Captions)
                 {
-                    var imageAnalysisView = (ImageAnalysisViewModel)ViewData["ImageAnalysisViewModel"];
-                    <h5>Description</h5>
-                    foreach (var caption in imageAnalysisView.imageAnalysisResult.Description.Captions)
+                    <span class="text-info"> @caption.Text: with confidence @caption.Confidence</span><br />
+                }
+                <h5>Landmark</h5>
+                foreach (var category in imageAnalysisView.imageAnalysisResult.Categories)
+                {
+                    if (category.Detail?.Landmarks != null)
                     {
-                        <span class="text-info"> @caption.Text: with confidence @caption.Confidence</span><br />
-                    }
-                    <h5>Landmarks:</h5>
-                    foreach (var category in imageAnalysisView.imageAnalysisResult.Categories)
-                    {
-                        if (category.Detail?.Landmarks != null)
+                        foreach (var landmark in category.Detail.Landmarks)
                         {
-                            foreach (var landmark in category.Detail.Landmarks)
-                            {
-                                <span class="text-success"> @landmark.Name with confidence: @landmark.Confidence</span><br />
-                                break;
-                            }
+                            <span class="text-success"> @landmark.Name with confidence: @landmark.Confidence</span><br />
                             break;
                         }
+                        break;
                     }
-                    @if (ViewData["Coordinates"] != null)
-                    {
-                        var coordinatesModel = (CoordinatesViewModel)ViewData["Coordinates"];
-                        <h5>Coordinates</h5>
-                        <span class="badge badge-warning">Latitud: @coordinatesModel.latitude </span>
-                        <span class="badge badge-warning">Longitud: @coordinatesModel.longitude </span>
-                        
-                        <h5>Location</h5>
-                        <iframe
-                            width="500"
+                }
+                @if (ViewData["Coordinates"] != null)
+                {
+                    var coordinatesModel = (CoordinatesViewModel)ViewData["Coordinates"];
+                    <h5>Coordinates</h5>
+                    <span class="badge badge-warning">Latitud: @coordinatesModel.latitude </span>
+                    <span class="badge badge-warning">Longitud: @coordinatesModel.longitude </span>
+
+                    <h5>Location</h5>
+                    <iframe width="500"
                             height="400"
                             style="border:0"
                             loading="lazy"
                             allowfullscreen
                             src="https://www.google.com/maps/embed/v1/place?key=AIzaSyABjlTQ4n7GEdS3gErCOgGiirYFAelOMeA&q=@coordinatesModel.latitude,@coordinatesModel.longitude">
-                        </iframe>
-                    }
-                    <h5>Category:</h5>
-                    foreach (var category in imageAnalysisView.imageAnalysisResult.Categories)
-                    {
-                        <span class="text-success"> @category.Name with confidence: @category.Score</span><br />
-                    }
-                    <h5>Tags</h5>
-                    foreach (var tag in imageAnalysisView.imageAnalysisResult.Tags)
-                    {
-                        <span class="badge badge-success">@tag.Name - @tag.Confidence</span>
-                    }
+                    </iframe>
                 }
-            </p>
-        </div>
+                <h5>Tags</h5>
+                @foreach (var tag in imageAnalysisView.imageAnalysisResult.Tags)
+                {
+                    <span class="badge badge-success">@tag.Name - @tag.Confidence</span>
+                }
+            }
+        </p>
     </div>
+    <div class="col-sm">
+        @if (ViewData["Weather"] != null)
+        {
+            <h5>Weather</h5>
+            <ul class="list-group">
+                @{var weatherModel = (Weather)ViewData["Weather"];}
+                @foreach (var item in weatherModel.List)
+                {
+                    var timestamp = item.Dt;
+                    string weatherlink = $"https://openweathermap.org/img/wn/{item.Weather[0].Icon}.png";
+                    // Unix timestamp is seconds past epoch
+                    DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                    dateTime = dateTime.AddSeconds(timestamp).ToLocalTime();
+
+
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @dateTime.Date <br>
+                        @item.Weather[0].Description
+                        <div class="image-parent">
+                            <img src=" @weatherlink " class="img-fluid">
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</div>
 </form>  
