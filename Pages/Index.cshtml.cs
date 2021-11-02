@@ -63,7 +63,7 @@ namespace MisVacaciones.Pages
                     if (imageAnalysis.imageAnalysisResult.Categories.Count >= 1 &&
                         imageAnalysis.imageAnalysisResult.Categories[0].Detail.Landmarks.Count >= 1)
                     {
-                        string? location = imageAnalysis.imageAnalysisResult.Categories[0].Detail.Landmarks[0].Name;
+                        var location = imageAnalysis.imageAnalysisResult.Categories[0].Detail.Landmarks[0].Name;
                         if (location != null)
                         {
                             var coordinates = await _locationService.AnalyzeAddress(location);

@@ -4,11 +4,12 @@
 @using MisVacaciones.Services.Dto;
 @using QuickType;
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Index";
 }
 
 <div class="text-center">
-    <h4>Mis Próximas Vacaciones</h4>
+    <h2>My Next Vacations</h2>
+    <br>
 </div>
 <form enctype="multipart/form-data" method="post">
     @*File Upload part*@
@@ -29,15 +30,15 @@
 
     @*Displaying Analysis results*@
 <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm">
 
         @if (ViewData["ImageUrl"] != null)
         {
             var imageUrl = Convert.ToString(ViewData["ImageUrl"]);
-            <img src="UploadImages/@imageUrl" alt="rijsat.com" class="img-thumbnail" />
+            <img src="UploadImages/@imageUrl" class="img-thumbnail"/>
         }
     </div>
-    <div class="col-sm-6 small">
+    <div class="col-sm">
         <p>
             @if (ViewData["ImageAnalysisViewModel"] != null)
             {
@@ -84,23 +85,26 @@
             }
         </p>
     </div>
-    <div class="col-sm-6">
-        <h5>Weather</h5>
-        <ul class="list-group">
-            @if (ViewData["Weather"] != null)
-            {
-                var weatherModel = (Weather)ViewData["Weather"];
-                foreach (var item in weatherModel.List)
+    <div class="col-sm">
+        @if (ViewData["Weather"] != null)
+        {
+            <h5>Weather</h5>
+            <ul class="list-group">
+                @{var weatherModel = (Weather)ViewData["Weather"];}
+                @foreach (var item in weatherModel.List)
                 {
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        @item.Weather
+                        @item.Weather[0].Description
                         <div class="image-parent">
-                            <img src="https://s3.eu-central-1.amazonaws.com/bootstrapbaymisc/blog/24_days_bootstrap/don_quixote.jpg" class="img-fluid" alt="quixote">
+                            @{
+                                string weatherlink = $"https://openweathermap.org/img/wn/{item.Weather[0].Icon}.png";
+                            }
+                            <img src=" @weatherlink " class="img-fluid">
                         </div>
                     </li>
                 }
-            }
-        </ul>
+            </ul>
+        }
     </div>
 </div>
 </form>  
