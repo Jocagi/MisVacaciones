@@ -61,6 +61,7 @@ namespace MisVacaciones.Pages
                     
                     // using service to get location 
                     if (imageAnalysis.imageAnalysisResult.Categories.Count >= 1 &&
+                        imageAnalysis.imageAnalysisResult.Categories[0].Detail != null &&
                         imageAnalysis.imageAnalysisResult.Categories[0].Detail.Landmarks.Count >= 1)
                     {
                         var location = imageAnalysis.imageAnalysisResult.Categories[0].Detail.Landmarks[0].Name;
