@@ -13,7 +13,8 @@ namespace MisVacaciones.Services
     {
         private const string apiKey = "cc29f7360691daf1a08416de131c00ca";
         private const string forecastDays = "16";
-        private const string endpoint = "https://api.openweathermap.org/data/2.5/forecast/daily?lat={lat}&lon={lon}&cnt={cnt}&appid={API key}";
+        private const string measureUnits = "metric";
+        private const string endpoint = "https://api.openweathermap.org/data/2.5/forecast/daily?lat={lat}&lon={lon}&units={units}&cnt={cnt}&appid={API key}";
 
         public async Task<Weather> GetWeather(double longitude, double latitude) 
         {
@@ -23,6 +24,7 @@ namespace MisVacaciones.Services
             url = url.Replace("{lat}", latitude.ToString());
             url = url.Replace("{lon}", longitude.ToString());
             url = url.Replace("{cnt}", forecastDays);
+            url = url.Replace("{units}", measureUnits);
             url = url.Replace("{API key}", apiKey);
 
             //Enviar solicitud a API
