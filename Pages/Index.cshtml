@@ -34,8 +34,16 @@
 
         @if (ViewData["ImageUrl"] != null)
         {
+            //Image
             var imageUrl = Convert.ToString(ViewData["ImageUrl"]);
-            <img src="UploadImages/@imageUrl" class="img-thumbnail"/>
+            <img src="UploadImages/@imageUrl" class="img-thumbnail" />
+
+            //Vote
+            <!-- LikeBtn.com BEGIN -->
+            <br>
+            <span class="likebtn-wrapper" data-theme="large" data-ef_voting="push" data-voting_frequency="10" data-counter_frmt="km" data-popup_width="50" data-share_size="small" data-loader_show="true"></span>
+            <script>(function(d,e,s){if(d.getElementById("likebtn_wjs"))return;a=d.createElement(e);m=d.getElementsByTagName(e)[0];a.async=1;a.id="likebtn_wjs";a.src=s;m.parentNode.insertBefore(a, m)})(document,"script","//w.likebtn.com/js/w/widget.js");</script>
+            <!-- LikeBtn.com END -->
         }
     </div>
     <div class="col-sm">
@@ -100,13 +108,14 @@
                     dateTime = dateTime.AddSeconds(timestamp).ToLocalTime();
 
 
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        @dateTime.Date <br>
-                        @item.Weather[0].Description
-                        <div class="image-parent">
-                            <img src=" @weatherlink " class="img-fluid">
-                        </div>
-                    </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    @dateTime.Date.ToShortDateString() <br>
+                    @item.Weather[0].Description <br>
+                    @item.Temp.Day °C
+                    <div class="image-parent">
+                        <img src=" @weatherlink " class="img-fluid">
+                    </div>
+                </li>
                 }
             </ul>
         }
