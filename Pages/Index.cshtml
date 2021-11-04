@@ -21,6 +21,111 @@
         <input asp-page-handler="Upload" class="btn btn-primary" type="submit" value="Upload">
     </div>
 
+
+    <button class="btn btn-primary" id="submit">Submit</button>
+    <canvas id="myCanvas" width="578" height="200"></canvas>
+    <script>
+
+
+        var canvas = document.getElementById('myCanvas');
+        var context = canvas.getContext('2d');
+
+        // begin custom shape for canvas
+        context.beginPath();
+        context.moveTo(170, 80);
+        context.bezierCurveTo(130, 100, 130, 150, 230, 150);
+        context.bezierCurveTo(250, 180, 320, 180, 340, 150);
+        context.bezierCurveTo(420, 150, 420, 120, 390, 100);
+        context.bezierCurveTo(430, 40, 370, 30, 340, 50);
+        context.bezierCurveTo(320, 5, 250, 20, 250, 50);
+        context.bezierCurveTo(200, 5, 150, 20, 170, 80);
+        // complete custom shape
+        context.closePath();
+        context.lineWidth = 5;
+        context.fillStyle = '#8ED6FF';
+        context.fill();
+        context.strokeStyle = 'blue';
+        context.stroke();
+
+        //Capture
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+
+        today = yyyy + mm + dd;
+        document.write(today);
+
+        var filenameBLOB = "capture" + today + ".png"
+
+        $(function () {
+            $('#submit').on('click', function (evt) {
+
+                window.history.pushState("object", "Title", "/new-url");
+
+                evt.preventDefault();
+
+                var dataURL = canvas.toDataURL();
+                var blobBin = atob(dataURL.split(',')[1]);
+                var array = [];
+                for (var i = 0; i < blobBin.length; i++) {
+                    array.push(blobBin.charCodeAt(i));
+                }
+                var file = new Blob([new Uint8Array(array)], {
+                    type: 'image/png'
+                });
+
+                var formdata = new FormData();
+                formdata.append("fileUpload.FormFile", file, filenameBLOB);
+
+
+                $.ajax({
+                    headers: {
+                        "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val(),
+                        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+                        "Upgrade-Insecure-Requests": "1"
+                    },
+                    type: "POST",
+                    url: '/?handler=Upload',
+                    data: formdata,
+                    dataType: "html",
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        $("html").html(data);
+                    }
+                }).done(function (data) {
+                    console.log('saved');
+                });
+            });
+        });
+    </script>
+
+    @*<video id="player" controls autoplay></video>
+        <button id="capture">Capture</button>
+        <canvas id="canvas" width=320 height=240></canvas>
+        <script>
+            const player = document.getElementById('player');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            const captureButton = document.getElementById('capture');
+
+            const constraints = {
+                video: true,
+            };
+
+            captureButton.addEventListener('click', () => {
+                // Draw the video frame to the canvas.
+                context.drawImage(player, 0, 0, canvas.width, canvas.height);
+            });
+
+            // Attach the video stream to the video element and autoplay.
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then((stream) => {
+                    player.srcObject = stream;
+                });
+        </script>*@
+
     @{
         if (ViewData["SuccessMessage"] != null)
         {
@@ -29,145 +134,145 @@
     }
 
     @*Displaying Analysis results*@
-<div class="row">
-    <div class="col-sm">
+    <div class="row">
+        <div class="col-sm">
 
-        @if (ViewData["ImageUrl"] != null)
-        {
-            //Image
-            var imageUrl = Convert.ToString(ViewData["ImageUrl"]);
-            <img src="UploadImages/@imageUrl" class="img-thumbnail" />
-
-            //Vote
-            <!-- LikeBtn.com BEGIN -->
-            <br>
-            <span class="likebtn-wrapper" data-theme="large" data-ef_voting="push" data-voting_frequency="10" data-counter_frmt="km" data-popup_width="50" data-share_size="small" data-loader_show="true"></span>
-            <script>(function (d, e, s) { if (d.getElementById("likebtn_wjs")) return; a = d.createElement(e); m = d.getElementsByTagName(e)[0]; a.async = 1; a.id = "likebtn_wjs"; a.src = s; m.parentNode.insertBefore(a, m) })(document, "script", "//w.likebtn.com/js/w/widget.js");</script>
-            <!-- LikeBtn.com END -->
-        }
-    </div>
-    <div class="col-sm">
-        <p>
-            @if (ViewData["ImageAnalysisViewModel"] != null)
+            @if (ViewData["ImageUrl"] != null)
             {
-                var imageAnalysisView = (ImageAnalysisViewModel)ViewData["ImageAnalysisViewModel"];
-                <h5>Description</h5>
-                foreach (var caption in imageAnalysisView.imageAnalysisResult.Description.Captions)
+                //Image
+                var imageUrl = Convert.ToString(ViewData["ImageUrl"]);
+                <img src="UploadImages/@imageUrl" class="img-thumbnail" />
+
+                //Vote
+                <!-- LikeBtn.com BEGIN -->
+                <br>
+                <span class="likebtn-wrapper" data-theme="large" data-ef_voting="push" data-voting_frequency="10" data-counter_frmt="km" data-popup_width="50" data-share_size="small" data-loader_show="true"></span>
+                <script>(function (d, e, s) { if (d.getElementById("likebtn_wjs")) return; a = d.createElement(e); m = d.getElementsByTagName(e)[0]; a.async = 1; a.id = "likebtn_wjs"; a.src = s; m.parentNode.insertBefore(a, m) })(document, "script", "//w.likebtn.com/js/w/widget.js");</script>
+                <!-- LikeBtn.com END -->
+            }
+        </div>
+        <div class="col-sm">
+            <p>
+                @if (ViewData["ImageAnalysisViewModel"] != null)
                 {
-                    <span class="text-info"> @caption.Text: with confidence @caption.Confidence</span><br />
-                }
-                foreach (var category in imageAnalysisView.imageAnalysisResult.Categories)
-                {
-                    if (category.Detail?.Landmarks != null)
+                    var imageAnalysisView = (ImageAnalysisViewModel)ViewData["ImageAnalysisViewModel"];
+                    <h5>Description</h5>
+                    foreach (var caption in imageAnalysisView.imageAnalysisResult.Description.Captions)
                     {
-                        <h5>Landmark</h5>
-                        foreach (var landmark in category.Detail.Landmarks)
+                        <span class="text-info"> @caption.Text: with confidence @caption.Confidence</span><br />
+                    }
+                    foreach (var category in imageAnalysisView.imageAnalysisResult.Categories)
+                    {
+                        if (category.Detail?.Landmarks != null)
                         {
-                            <span class="text-success"> @landmark.Name with confidence: @landmark.Confidence</span><br />
+                            <h5>Landmark</h5>
+                            foreach (var landmark in category.Detail.Landmarks)
+                            {
+                                <span class="text-success"> @landmark.Name with confidence: @landmark.Confidence</span><br />
+                                break;
+                            }
                             break;
                         }
-                        break;
+                    }
+                    @if (ViewData["Coordinates"] != null)
+                    {
+                        var coordinatesModel = (CoordinatesViewModel)ViewData["Coordinates"];
+                        <h5>Coordinates</h5>
+                        <span class="badge badge-warning">Latitude: @coordinatesModel.latitude </span>
+                        <span class="badge badge-warning">Longitude: @coordinatesModel.longitude </span>
+
+                        <h5>Location</h5>
+                        <iframe width="500"
+                                height="400"
+                                style="border:0"
+                                loading="lazy"
+                                allowfullscreen
+                                src="https://www.google.com/maps/embed/v1/place?key=AIzaSyABjlTQ4n7GEdS3gErCOgGiirYFAelOMeA&q=@coordinatesModel.latitude,@coordinatesModel.longitude">
+                        </iframe>
+                    }
+                    @if (ViewData["Weather"] != null)
+                    {
+                        <h5>Recommendation</h5>
+                        <ul class="list-group">
+
+                            @{var weatherModel = (Weather)ViewData["Weather"];
+                                var temp = weatherModel.List[0].Temp.Day;}
+
+                            @if (temp <= 17)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="image-parent">
+                                        <img src="~/assets/invierno_h.png" class="img-fluid">
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="image-parent">
+                                        <img src="~/assets/invierno_m.png" class="img-fluid">
+                                    </div>
+                                </li>
+                            }
+                            else if (temp > 17 && temp <= 22)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="image-parent">
+                                        <img src="~/assets/fresco_h.png" class="img-fluid">
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="image-parent">
+                                        <img src="~/assets/fresco_m.png" class="img-fluid">
+                                    </div>
+                                </li>
+                            }
+                            else if (temp > 22)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="image-parent">
+                                        <img src="~/assets/verano_h.png" class="img-fluid">
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="image-parent">
+                                        <img src="~/assets/verano_m.png" class="img-fluid">
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    <h5>Tags</h5>
+                    @foreach (var tag in imageAnalysisView.imageAnalysisResult.Tags)
+                    {
+                        <span class="badge badge-success">@tag.Name - @tag.Confidence</span>
                     }
                 }
-                @if (ViewData["Coordinates"] != null)
-                {
-                    var coordinatesModel = (CoordinatesViewModel)ViewData["Coordinates"];
-                    <h5>Coordinates</h5>
-                    <span class="badge badge-warning">Latitude: @coordinatesModel.latitude </span>
-                    <span class="badge badge-warning">Longitude: @coordinatesModel.longitude </span>
+            </p>
+        </div>
+        <div class="col-sm">
+            @if (ViewData["Weather"] != null)
+            {
+                <h5>Weather</h5>
+                <ul class="list-group">
+                    @{var weatherModel = (Weather)ViewData["Weather"];}
+                    @foreach (var item in weatherModel.List)
+                    {
+                        var timestamp = item.Dt;
+                        string weatherlink = $"https://openweathermap.org/img/wn/{item.Weather[0].Icon}.png";
+                        // Unix timestamp is seconds past epoch
+                        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                        dateTime = dateTime.AddSeconds(timestamp).ToLocalTime();
 
-                    <h5>Location</h5>
-                    <iframe width="500"
-                            height="400"
-                            style="border:0"
-                            loading="lazy"
-                            allowfullscreen
-                            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyABjlTQ4n7GEdS3gErCOgGiirYFAelOMeA&q=@coordinatesModel.latitude,@coordinatesModel.longitude">
-                    </iframe>
-                }
-                @if (ViewData["Weather"] != null)
-                {
-                    <h5>Recommendation</h5>
-                    <ul class="list-group">
 
-                        @{var weatherModel = (Weather)ViewData["Weather"];
-                            var temp = weatherModel.List[0].Temp.Day;}
-
-                        @if (temp <= 17)
-                        {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="image-parent">
-                                    <img src="~/assets/invierno_h.png" class="img-fluid">
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="image-parent">
-                                    <img src="~/assets/invierno_m.png" class="img-fluid">
-                                </div>
-                            </li>
-                        }
-                        else if (temp > 17 && temp <= 22)
-                        {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="image-parent">
-                                    <img src="~/assets/fresco_h.png" class="img-fluid">
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="image-parent">
-                                    <img src="~/assets/fresco_m.png" class="img-fluid">
-                                </div>
-                            </li>
-                        }
-                        else if (temp > 22)
-                        {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="image-parent">
-                                    <img src="~/assets/verano_h.png" class="img-fluid">
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="image-parent">
-                                    <img src="~/assets/verano_m.png" class="img-fluid">
-                                </div>
-                            </li>
-                        }
-                    </ul>
-                }
-                <h5>Tags</h5>
-                @foreach (var tag in imageAnalysisView.imageAnalysisResult.Tags)
-                {
-                    <span class="badge badge-success">@tag.Name - @tag.Confidence</span>
-                }
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            @dateTime.Date.ToShortDateString() <br>
+                            @item.Weather[0].Description <br>
+                            @item.Temp.Day °C
+                            <div class="image-parent">
+                                <img src=" @weatherlink " class="img-fluid">
+                            </div>
+                        </li>
+                    }
+                </ul>
             }
-        </p>
+        </div>
     </div>
-    <div class="col-sm">
-        @if (ViewData["Weather"] != null)
-        {
-            <h5>Weather</h5>
-            <ul class="list-group">
-                @{var weatherModel = (Weather)ViewData["Weather"];}
-                @foreach (var item in weatherModel.List)
-                {
-                    var timestamp = item.Dt;
-                    string weatherlink = $"https://openweathermap.org/img/wn/{item.Weather[0].Icon}.png";
-                    // Unix timestamp is seconds past epoch
-                    DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-                    dateTime = dateTime.AddSeconds(timestamp).ToLocalTime();
-
-
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        @dateTime.Date.ToShortDateString() <br>
-                        @item.Weather[0].Description <br>
-                        @item.Temp.Day °C
-                        <div class="image-parent">
-                            <img src=" @weatherlink " class="img-fluid">
-                        </div>
-                    </li>
-                }
-            </ul>
-        }
-    </div>
-</div>
 </form>  
