@@ -7,19 +7,28 @@
     ViewData["Title"] = "Photo";
 }
 
+
 <div class="text-center">
     <h2>My Vacations</h2>
     <br>
 </div>
-    <video id="player" controls autoplay width=320 height=240></video>
-    <button id="capture">Tomar Foto</button>
-    <canvas id="canvas" width=320 height=240></canvas>
-    <button class="btn btn-primary" id="submit">Submit</button>
+
+
+@{
+    if (ViewData["SuccessMessage"] == "")
+    {
+        <video id="player" controls autoplay width=320 height=240></video>
+        <button id="capture">Tomar Foto</button>
+        <canvas id="canvas" width=320 height=240></canvas>
+        <button class="btn btn-primary" id="submit">Submit</button>
+    }
+}
+
 <form enctype="multipart/form-data" method="post">
 
 
 
-     
+
     @{
         if (ViewData["SuccessMessage"] != null)
         {
@@ -169,73 +178,73 @@
             }
         </div>
     </div>
-</form>  
+</form>
 
- <script>
-  const player = document.getElementById('player');
-  const canvas = document.getElementById('canvas');
-  const context = canvas.getContext('2d');
-  const captureButton = document.getElementById('capture');
-  
-  var today = new Date();
-  var dd = String(today.getDate()).padStart(2, '0');
-  var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-  var yyyy = today.getFullYear();
-  today = yyyy + mm + dd;
+<script>
+    const player = document.getElementById('player');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    const captureButton = document.getElementById('capture');
 
-  var filenameBLOB = "capture" + today + ".png"
-  const constraints = {
-    video: true,
-  };
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+    today = yyyy + mm + dd;
+
+    var filenameBLOB = "capture" + today + ".png"
+    const constraints = {
+        video: true,
+    };
     captureButton.addEventListener('click', () => {
-    // Draw the video frame to the canvas.
-    context.drawImage(player, 0, 0, canvas.width, canvas.height);      
-  });  
-  // Attach the video stream to the video element and autoplay.
-  navigator.mediaDevices.getUserMedia(constraints)
-    .then((stream) => {
-      player.srcObject = stream;
+        // Draw the video frame to the canvas.
+        context.drawImage(player, 0, 0, canvas.width, canvas.height);
     });
-    
+    // Attach the video stream to the video element and autoplay.
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then((stream) => {
+            player.srcObject = stream;
+        });
+
     $(function () {
-            $('#submit').on('click', function (evt) {
+        $('#submit').on('click', function (evt) {
 
-                window.history.pushState("object", "Title", "/new-url");
+            window.history.pushState("object", "Title", "/new-url");
 
-                evt.preventDefault();
+            evt.preventDefault();
 
-                var dataURL = canvas.toDataURL();
-                var blobBin = atob(dataURL.split(',')[1]);
-                var array = [];
-                for (var i = 0; i < blobBin.length; i++) {
-                    array.push(blobBin.charCodeAt(i));
+            var dataURL = canvas.toDataURL();
+            var blobBin = atob(dataURL.split(',')[1]);
+            var array = [];
+            for (var i = 0; i < blobBin.length; i++) {
+                array.push(blobBin.charCodeAt(i));
+            }
+            var file = new Blob([new Uint8Array(array)], {
+                type: 'image/png'
+            });
+
+            var formdata = new FormData();
+            formdata.append("fileUpload.FormFile", file, filenameBLOB);
+
+
+            $.ajax({
+                headers: {
+                    "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val(),
+                    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+                    "Upgrade-Insecure-Requests": "1"
+                },
+                type: "POST",
+                url: '/Photo?handler=UploadPhoto',
+                data: formdata,
+                dataType: "html",
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    $("html").html(data);
                 }
-                var file = new Blob([new Uint8Array(array)], {
-                    type: 'image/png'
-                });
-
-                var formdata = new FormData();
-                formdata.append("fileUpload.FormFile", file, filenameBLOB);
-
-
-                $.ajax({
-                    headers: {
-                        "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val(),
-                        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-                        "Upgrade-Insecure-Requests": "1"
-                    },
-                    type: "POST",
-                    url: '/?handler=Upload',
-                    data: formdata,
-                    dataType: "html",
-                    processData: false,
-                    contentType: false,
-                    success: function (data) {
-                        $("html").html(data);
-                    }
-                }).done(function (data) {
-                    console.log('saved');
-                });
+            }).done(function (data) {
+                console.log('saved');
             });
         });
+    });
 </script>

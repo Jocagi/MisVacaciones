@@ -36,7 +36,7 @@ namespace MisVacaciones.Pages
         {
             ViewData["SuccessMessage"] = "";
         }
-        public async Task<IActionResult> OnPostUpload(FileUpload fileUpload)
+        public async Task<IActionResult> OnPostUploadPhoto(FileUpload fileUpload)
         {
             string fullPath = _hostEnvironment.WebRootPath + "/UploadImages/";
             if (!Directory.Exists(fullPath))

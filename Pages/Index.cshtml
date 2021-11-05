@@ -7,11 +7,18 @@
     ViewData["Title"] = "Index";
 }
 
-<div class="loading" align="center">
+<div class="loading" align="center" onload="setTimeout() onclick="setTimeout()">
         Loading. Please wait.<br/>
         <br/>
         <img src="https://cdn.dribbble.com/users/722246/screenshots/4400319/loading_crescor_dribbble.gif" alt=""/>
-    </div>
+</div>
+
+<script type="text/javascript">
+    setTimeout(function () {
+        document.body.removeChild(modal);
+        loading.style.display = "none";
+    }, 2000); //Delay just used for example and must be set to 0.
+</script>
 
 <script type="text/javascript">
         var modal, loading;
@@ -192,13 +199,4 @@
             }
         </div>
     </div>
-</form>  
-
- <script type="text/javascript">
-        window.onload = function () {
-            setTimeout(function () {
-                document.body.removeChild(modal);
-                loading.style.display = "none";
-            }, 2000); //Delay just used for example and must be set to 0.
-        };
-    </script>
+</form>
