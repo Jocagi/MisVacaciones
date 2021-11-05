@@ -8,7 +8,7 @@
 }
 
 <div class="text-center">
-    <h2>My Next Vacations</h2>
+    <h2>My Vacations</h2>
     <br>
 </div>
 <form enctype="multipart/form-data" method="post">
@@ -34,8 +34,16 @@
 
         @if (ViewData["ImageUrl"] != null)
         {
+            //Image
             var imageUrl = Convert.ToString(ViewData["ImageUrl"]);
-            <img src="UploadImages/@imageUrl" class="img-thumbnail"/>
+            <img src="UploadImages/@imageUrl" class="img-thumbnail" />
+
+            //Vote
+            <!-- LikeBtn.com BEGIN -->
+            <br>
+            <span class="likebtn-wrapper" data-theme="large" data-ef_voting="push" data-voting_frequency="10" data-counter_frmt="km" data-popup_width="50" data-share_size="small" data-loader_show="true"></span>
+            <script>(function (d, e, s) { if (d.getElementById("likebtn_wjs")) return; a = d.createElement(e); m = d.getElementsByTagName(e)[0]; a.async = 1; a.id = "likebtn_wjs"; a.src = s; m.parentNode.insertBefore(a, m) })(document, "script", "//w.likebtn.com/js/w/widget.js");</script>
+            <!-- LikeBtn.com END -->
         }
     </div>
     <div class="col-sm">
@@ -48,11 +56,11 @@
                 {
                     <span class="text-info"> @caption.Text: with confidence @caption.Confidence</span><br />
                 }
-                <h5>Landmark</h5>
                 foreach (var category in imageAnalysisView.imageAnalysisResult.Categories)
                 {
                     if (category.Detail?.Landmarks != null)
                     {
+                        <h5>Landmark</h5>
                         foreach (var landmark in category.Detail.Landmarks)
                         {
                             <span class="text-success"> @landmark.Name with confidence: @landmark.Confidence</span><br />
@@ -65,8 +73,8 @@
                 {
                     var coordinatesModel = (CoordinatesViewModel)ViewData["Coordinates"];
                     <h5>Coordinates</h5>
-                    <span class="badge badge-warning">Latitud: @coordinatesModel.latitude </span>
-                    <span class="badge badge-warning">Longitud: @coordinatesModel.longitude </span>
+                    <span class="badge badge-warning">Latitude: @coordinatesModel.latitude </span>
+                    <span class="badge badge-warning">Longitude: @coordinatesModel.longitude </span>
 
                     <h5>Location</h5>
                     <iframe width="500"
@@ -76,6 +84,55 @@
                             allowfullscreen
                             src="https://www.google.com/maps/embed/v1/place?key=AIzaSyABjlTQ4n7GEdS3gErCOgGiirYFAelOMeA&q=@coordinatesModel.latitude,@coordinatesModel.longitude">
                     </iframe>
+                }
+                @if (ViewData["Weather"] != null)
+                {
+                    <h5>Recommendation</h5>
+                    <ul class="list-group">
+
+                        @{var weatherModel = (Weather)ViewData["Weather"];
+                            var temp = weatherModel.List[0].Temp.Day;}
+
+                        @if (temp <= 17)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="image-parent">
+                                    <img src="~/assets/invierno_h.png" class="img-fluid">
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="image-parent">
+                                    <img src="~/assets/invierno_m.png" class="img-fluid">
+                                </div>
+                            </li>
+                        }
+                        else if (temp > 17 && temp <= 22)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="image-parent">
+                                    <img src="~/assets/fresco_h.png" class="img-fluid">
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="image-parent">
+                                    <img src="~/assets/fresco_m.png" class="img-fluid">
+                                </div>
+                            </li>
+                        }
+                        else if (temp > 22)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="image-parent">
+                                    <img src="~/assets/verano_h.png" class="img-fluid">
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="image-parent">
+                                    <img src="~/assets/verano_m.png" class="img-fluid">
+                                </div>
+                            </li>
+                        }
+                    </ul>
                 }
                 <h5>Tags</h5>
                 @foreach (var tag in imageAnalysisView.imageAnalysisResult.Tags)
@@ -101,8 +158,9 @@
 
 
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        @dateTime.Date <br>
-                        @item.Weather[0].Description
+                        @dateTime.Date.ToShortDateString() <br>
+                        @item.Weather[0].Description <br>
+                        @item.Temp.Day °C
                         <div class="image-parent">
                             <img src=" @weatherlink " class="img-fluid">
                         </div>
