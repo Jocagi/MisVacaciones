@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using MisVacaciones.Services;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
 
 namespace MisVacaciones.Pages
 {
@@ -90,6 +92,41 @@ namespace MisVacaciones.Pages
 
             return Page();
         }
+        public void OnPostEnviar(string correo, string cuerpo, string hostname)
+        {
+            cuerpo = replaceSRC(cuerpo, hostname);
+            string EmailOrigen = "bruteforce.misvacaciones@gmail.com";
+            string EmailDestion = correo;
+            string contraseña = "123genesis";
+            string Cuerpo = cuerpo;
+            MailMessage mailMessage = new MailMessage(EmailOrigen, EmailDestion, "Mis vacaciones: información de ubicación", Cuerpo);
+            mailMessage.IsBodyHtml = true;
+            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com");
+            smtpClient.EnableSsl = true;
+            smtpClient.UseDefaultCredentials = false;
+            smtpClient.Port = 587;
+            smtpClient.Credentials = new System.Net.NetworkCredential(EmailOrigen, contraseña);
+            smtpClient.Send(mailMessage);
+            smtpClient.Dispose();
+        }
+
+        private string replaceSRC(string html, string host) 
+        {
+            html = html.Replace("UploadImages", host + "/UploadImages");
+            html = html.Replace("assets", host + "/assets");
+
+
+            html = html.Replace("\n", " ");
+            html = html.Replace("\t", " ");
+            html = Regex.Replace(html, "\\s+", " ");
+            html = Regex.Replace(html, "<head.*?</head>", "", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            html = Regex.Replace(html, "<script.*?</script>", "", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            html = Regex.Replace(html, "<form.*?</form>", "", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            html = Regex.Replace(html, "<header.*?</header>", "", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            
+            return html;
+        }
+
         public class FileUpload
         {
             [Required]

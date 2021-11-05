@@ -20,7 +20,7 @@
         </label>
         <input asp-page-handler="Upload" class="btn btn-primary" type="submit" value="Upload">
     </div>
-
+</form>
     @{
         if (ViewData["SuccessMessage"] != null)
         {
@@ -29,145 +29,169 @@
     }
 
     @*Displaying Analysis results*@
-<div class="row">
-    <div class="col-sm">
+    <div class="row">
+        <div class="col-sm">
 
-        @if (ViewData["ImageUrl"] != null)
-        {
-            //Image
-            var imageUrl = Convert.ToString(ViewData["ImageUrl"]);
-            <img src="UploadImages/@imageUrl" class="img-thumbnail" />
-
-            //Vote
-            <!-- LikeBtn.com BEGIN -->
-            <br>
-            <span class="likebtn-wrapper" data-theme="large" data-ef_voting="push" data-voting_frequency="10" data-counter_frmt="km" data-popup_width="50" data-share_size="small" data-loader_show="true"></span>
-            <script>(function (d, e, s) { if (d.getElementById("likebtn_wjs")) return; a = d.createElement(e); m = d.getElementsByTagName(e)[0]; a.async = 1; a.id = "likebtn_wjs"; a.src = s; m.parentNode.insertBefore(a, m) })(document, "script", "//w.likebtn.com/js/w/widget.js");</script>
-            <!-- LikeBtn.com END -->
-        }
-    </div>
-    <div class="col-sm">
-        <p>
-            @if (ViewData["ImageAnalysisViewModel"] != null)
+            @if (ViewData["ImageUrl"] != null)
             {
-                var imageAnalysisView = (ImageAnalysisViewModel)ViewData["ImageAnalysisViewModel"];
-                <h5>Description</h5>
-                foreach (var caption in imageAnalysisView.imageAnalysisResult.Description.Captions)
+                //Image
+                var imageUrl = Convert.ToString(ViewData["ImageUrl"]);
+                <img src="UploadImages/@imageUrl" class="img-thumbnail" />
+
+                //Vote
+                <!-- LikeBtn.com BEGIN -->
+                <br>
+                <span class="likebtn-wrapper" data-theme="large" data-ef_voting="push" data-voting_frequency="10" data-counter_frmt="km" data-popup_width="50" data-share_size="small" data-loader_show="true"></span>
+                <script>(function (d, e, s) { if (d.getElementById("likebtn_wjs")) return; a = d.createElement(e); m = d.getElementsByTagName(e)[0]; a.async = 1; a.id = "likebtn_wjs"; a.src = s; m.parentNode.insertBefore(a, m) })(document, "script", "//w.likebtn.com/js/w/widget.js");</script>
+                <!-- LikeBtn.com END -->
+
+
+                <!-- Email -->
+                <script>
+                    function obtenerHtml() {
+                        var input = document.getElementById("cualquiernombre");
+                        input.value = document.documentElement.innerHTML;
+
+                        var inputHOST = document.getElementById("hostname");
+                        inputHOST.value = window.location.hostname;
+                    }
+                </script>
+                <form enctype="multipart/form-data" method="post">
+                    <div class="form-group">
+                        <label for="correo">
+                            <span>Correo: </span>
+                            <input type="text" name="correo" onclick="obtenerHtml()" />
+                            <input type="hidden" name="cuerpo" id="cualquiernombre" />
+                            <input type="hidden" name="hostname" id="hostname" />
+                            <input asp-page-handler="Enviar" class="btn btn-primary" type="submit" value="Enviar">
+                        </label>
+                        <br>
+                    </div>
+                </form>
+                <!-- /Email -->
+            }
+        </div>
+        <div class="col-sm">
+            <p>
+                @if (ViewData["ImageAnalysisViewModel"] != null)
                 {
-                    <span class="text-info"> @caption.Text: with confidence @caption.Confidence</span><br />
-                }
-                foreach (var category in imageAnalysisView.imageAnalysisResult.Categories)
-                {
-                    if (category.Detail?.Landmarks != null)
+                    var imageAnalysisView = (ImageAnalysisViewModel)ViewData["ImageAnalysisViewModel"];
+                    <h5>Description</h5>
+                    foreach (var caption in imageAnalysisView.imageAnalysisResult.Description.Captions)
                     {
-                        <h5>Landmark</h5>
-                        foreach (var landmark in category.Detail.Landmarks)
+                        <span class="text-info"> @caption.Text: with confidence @caption.Confidence</span><br />
+                    }
+                    foreach (var category in imageAnalysisView.imageAnalysisResult.Categories)
+                    {
+                        if (category.Detail?.Landmarks != null)
                         {
-                            <span class="text-success"> @landmark.Name with confidence: @landmark.Confidence</span><br />
+                            <h5>Landmark</h5>
+                            foreach (var landmark in category.Detail.Landmarks)
+                            {
+                                <span class="text-success"> @landmark.Name with confidence: @landmark.Confidence</span><br />
+                                break;
+                            }
                             break;
                         }
-                        break;
+                    }
+                    @if (ViewData["Coordinates"] != null)
+                    {
+                        var coordinatesModel = (CoordinatesViewModel)ViewData["Coordinates"];
+                        <h5>Coordinates</h5>
+                        <span class="badge badge-warning">Latitude: @coordinatesModel.latitude </span>
+                        <span class="badge badge-warning">Longitude: @coordinatesModel.longitude </span>
+
+                        <h5>Location</h5>
+                        <iframe width="500"
+                                height="400"
+                                style="border:0"
+                                loading="lazy"
+                                allowfullscreen
+                                src="https://www.google.com/maps/embed/v1/place?key=AIzaSyABjlTQ4n7GEdS3gErCOgGiirYFAelOMeA&q=@coordinatesModel.latitude,@coordinatesModel.longitude">
+                        </iframe>
+                    }
+                    @if (ViewData["Weather"] != null)
+                    {
+                        <h5>Recommendation</h5>
+                        <ul class="list-group">
+
+                            @{var weatherModel = (Weather)ViewData["Weather"];
+                                var temp = weatherModel.List[0].Temp.Day;}
+
+                            @if (temp <= 17)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="image-parent">
+                                        <img src="assets/invierno_h.png" class="img-fluid">
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="image-parent">
+                                        <img src="assets/invierno_m.png" class="img-fluid">
+                                    </div>
+                                </li>
+                            }
+                            else if (temp > 17 && temp <= 22)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="image-parent">
+                                        <img src="assets/fresco_h.png" class="img-fluid">
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="image-parent">
+                                        <img src="assets/fresco_m.png" class="img-fluid">
+                                    </div>
+                                </li>
+                            }
+                            else if (temp > 22)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="image-parent">
+                                        <img src="assets/verano_h.png" class="img-fluid">
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="image-parent">
+                                        <img src="assets/verano_m.png" class="img-fluid">
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    <h5>Tags</h5>
+                    @foreach (var tag in imageAnalysisView.imageAnalysisResult.Tags)
+                    {
+                        <span class="badge badge-success">@tag.Name - @tag.Confidence</span>
                     }
                 }
-                @if (ViewData["Coordinates"] != null)
-                {
-                    var coordinatesModel = (CoordinatesViewModel)ViewData["Coordinates"];
-                    <h5>Coordinates</h5>
-                    <span class="badge badge-warning">Latitude: @coordinatesModel.latitude </span>
-                    <span class="badge badge-warning">Longitude: @coordinatesModel.longitude </span>
+            </p>
+        </div>
+        <div class="col-sm">
+            @if (ViewData["Weather"] != null)
+            {
+                <h5>Weather</h5>
+                <ul class="list-group">
+                    @{var weatherModel = (Weather)ViewData["Weather"];}
+                    @foreach (var item in weatherModel.List)
+                    {
+                        var timestamp = item.Dt;
+                        string weatherlink = $"https://openweathermap.org/img/wn/{item.Weather[0].Icon}.png";
+                        // Unix timestamp is seconds past epoch
+                        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                        dateTime = dateTime.AddSeconds(timestamp).ToLocalTime();
 
-                    <h5>Location</h5>
-                    <iframe width="500"
-                            height="400"
-                            style="border:0"
-                            loading="lazy"
-                            allowfullscreen
-                            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyABjlTQ4n7GEdS3gErCOgGiirYFAelOMeA&q=@coordinatesModel.latitude,@coordinatesModel.longitude">
-                    </iframe>
-                }
-                @if (ViewData["Weather"] != null)
-                {
-                    <h5>Recommendation</h5>
-                    <ul class="list-group">
 
-                        @{var weatherModel = (Weather)ViewData["Weather"];
-                            var temp = weatherModel.List[0].Temp.Day;}
-
-                        @if (temp <= 17)
-                        {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="image-parent">
-                                    <img src="~/assets/invierno_h.png" class="img-fluid">
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="image-parent">
-                                    <img src="~/assets/invierno_m.png" class="img-fluid">
-                                </div>
-                            </li>
-                        }
-                        else if (temp > 17 && temp <= 22)
-                        {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="image-parent">
-                                    <img src="~/assets/fresco_h.png" class="img-fluid">
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="image-parent">
-                                    <img src="~/assets/fresco_m.png" class="img-fluid">
-                                </div>
-                            </li>
-                        }
-                        else if (temp > 22)
-                        {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="image-parent">
-                                    <img src="~/assets/verano_h.png" class="img-fluid">
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="image-parent">
-                                    <img src="~/assets/verano_m.png" class="img-fluid">
-                                </div>
-                            </li>
-                        }
-                    </ul>
-                }
-                <h5>Tags</h5>
-                @foreach (var tag in imageAnalysisView.imageAnalysisResult.Tags)
-                {
-                    <span class="badge badge-success">@tag.Name - @tag.Confidence</span>
-                }
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            @dateTime.Date.ToShortDateString() <br>
+                            @item.Weather[0].Description <br>
+                            @item.Temp.Day °C
+                            <div class="image-parent">
+                                <img src=" @weatherlink " class="img-fluid">
+                            </div>
+                        </li>
+                    }
+                </ul>
             }
-        </p>
-    </div>
-    <div class="col-sm">
-        @if (ViewData["Weather"] != null)
-        {
-            <h5>Weather</h5>
-            <ul class="list-group">
-                @{var weatherModel = (Weather)ViewData["Weather"];}
-                @foreach (var item in weatherModel.List)
-                {
-                    var timestamp = item.Dt;
-                    string weatherlink = $"https://openweathermap.org/img/wn/{item.Weather[0].Icon}.png";
-                    // Unix timestamp is seconds past epoch
-                    DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-                    dateTime = dateTime.AddSeconds(timestamp).ToLocalTime();
-
-
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        @dateTime.Date.ToShortDateString() <br>
-                        @item.Weather[0].Description <br>
-                        @item.Temp.Day °C
-                        <div class="image-parent">
-                            <img src=" @weatherlink " class="img-fluid">
-                        </div>
-                    </li>
-                }
-            </ul>
-        }
-    </div>
+        </div>
 </div>
-</form>  
