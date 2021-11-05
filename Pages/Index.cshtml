@@ -50,6 +50,7 @@
         </label>
         <input asp-page-handler="Upload" class="btn btn-primary" type="submit" value="Upload">
     </div>
+</form>
     @{
         if (ViewData["SuccessMessage"] != null)
         {
@@ -73,6 +74,31 @@
                 <span class="likebtn-wrapper" data-theme="large" data-ef_voting="push" data-voting_frequency="10" data-counter_frmt="km" data-popup_width="50" data-share_size="small" data-loader_show="true"></span>
                 <script>(function (d, e, s) { if (d.getElementById("likebtn_wjs")) return; a = d.createElement(e); m = d.getElementsByTagName(e)[0]; a.async = 1; a.id = "likebtn_wjs"; a.src = s; m.parentNode.insertBefore(a, m) })(document, "script", "//w.likebtn.com/js/w/widget.js");</script>
                 <!-- LikeBtn.com END -->
+
+
+                <!-- Email -->
+                <script>
+                    function obtenerHtml() {
+                        var input = document.getElementById("cualquiernombre");
+                        input.value = document.documentElement.innerHTML;
+
+                        var inputHOST = document.getElementById("hostname");
+                        inputHOST.value = window.location.hostname;
+                    }
+                </script>
+                <form enctype="multipart/form-data" method="post">
+                    <div class="form-group">
+                        <label for="correo">
+                            <span>Correo: </span>
+                            <input type="text" name="correo" onclick="obtenerHtml()" />
+                            <input type="hidden" name="cuerpo" id="cualquiernombre" />
+                            <input type="hidden" name="hostname" id="hostname" />
+                            <input asp-page-handler="Enviar" class="btn btn-primary" type="submit" value="Enviar">
+                        </label>
+                        <br>
+                    </div>
+                </form>
+                <!-- /Email -->
             }
         </div>
         <div class="col-sm">
@@ -126,12 +152,12 @@
                             {
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div class="image-parent">
-                                        <img src="~/assets/invierno_h.png" class="img-fluid">
+                                        <img src="assets/invierno_h.png" class="img-fluid">
                                     </div>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div class="image-parent">
-                                        <img src="~/assets/invierno_m.png" class="img-fluid">
+                                        <img src="assets/invierno_m.png" class="img-fluid">
                                     </div>
                                 </li>
                             }
@@ -139,12 +165,12 @@
                             {
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div class="image-parent">
-                                        <img src="~/assets/fresco_h.png" class="img-fluid">
+                                        <img src="assets/fresco_h.png" class="img-fluid">
                                     </div>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div class="image-parent">
-                                        <img src="~/assets/fresco_m.png" class="img-fluid">
+                                        <img src="assets/fresco_m.png" class="img-fluid">
                                     </div>
                                 </li>
                             }
@@ -152,12 +178,12 @@
                             {
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div class="image-parent">
-                                        <img src="~/assets/verano_h.png" class="img-fluid">
+                                        <img src="assets/verano_h.png" class="img-fluid">
                                     </div>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div class="image-parent">
-                                        <img src="~/assets/verano_m.png" class="img-fluid">
+                                        <img src="assets/verano_m.png" class="img-fluid">
                                     </div>
                                 </li>
                             }
@@ -199,4 +225,3 @@
             }
         </div>
     </div>
-</form>
